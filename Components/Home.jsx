@@ -43,17 +43,31 @@ function Home() {
     return dayOfWeek === 0 || dayOfWeek === 6; 
   };
 
-  /*useEffect(()=> {
+  useEffect(()=> {
     const fetchData = async () => {
-      const resp = await fetch(`https://szunetnapok.hu/api/91ba48bb924e7cf64df1db2dcf9648d28fed707ea475eeec6ad1cef91594f2a8/2024${selectedMonth}`);
+      const resp = await fetch(`https://szunetnapok.hu/api/91ba48bb924e7cf64df1db2dcf9648d28fed707ea475eeec6ad1cef91594f2a8/2024`);
       const data = await resp.json();
       setFreeDays({days: data});
+      downloadJSON();
     }
     fetchData();
   },[selectedMonth]);
 
   console.log(freeDays);
-  console.log(freeDays.days.days)*/
+  console.log(freeDays.days.days)
+
+  const downloadJSON = () => {
+    const filename = "freeDays.json";
+    const json = JSON.stringify(freeDays);
+    const blob = new Blob([json], { type: "application/json" });
+    const href = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = href;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   return (
     <div>
@@ -65,6 +79,7 @@ function Home() {
           <option key={option.value} value={option.value}>{option.label}</option>
         ))}
       </select>
+      <button onClick={downloadJSON}>JSON letöltése</button>
 
       <table>
         <thead>
