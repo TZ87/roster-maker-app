@@ -1,0 +1,29 @@
+body {
+    background-color: white;
+    color: black;
+    font-family: Arial, sans-serif;
+    margin-top: 0;
+  }
+  h1 {
+    text-align: center;
+    margin-bottom: 100px;
+  }
+  table {
+    border-collapse: collapse;
+    border: 1px solid black;
+    table-layout: fixed;
+    width: 100%;
+  }
+  
+  th, td {
+    border: 1px solid black;
+    padding: 8px;
+    text-align: center;
+  }
+
+  th:first-child{
+    width: 200px;
+  }
+  th:not(:first-child), td:not(:first-child){
+    width: calc((100%-200px)-31);
+  }
