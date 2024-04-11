@@ -10,46 +10,56 @@ function Home() {
   ]);
 
   const [selectedYear, setSelectedYear] = useState(2024);
-  const [selectedMonth, setSelectedMonth] = useState(1);
+  const [selectedMonth, setSelectedMonth] = useState("01");
   const [daysInMonth, setDaysInMonth] = useState(31);
   const [daysArray, setDaysArray] = useState([...Array(daysInMonth).keys()].map(day => day + 1));
+  const [freeDays, setFreeDays] = useState([]);
 
   const [monthOptions,setMonthOptions] = useState([
-    { value: 1, label: "Január" },
-    { value: 2, label: "Február" },
-    { value: 3, label: "Március" },
-    { value: 4, label: "Április" },
-    { value: 5, label: "Május" },
-    { value: 6, label: "Június" },
-    { value: 7, label: "Július" },
-    { value: 8, label: "Augusztus" },
-    { value: 9, label: "Szeptember" },
-    { value: 10, label: "Október" },
-    { value: 11, label: "November" },
-    { value: 12, label: "December" },
+    { value: "01", label: "Január" },
+    { value: "02", label: "Február" },
+    { value: "03", label: "Március" },
+    { value: "04", label: "Április" },
+    { value: "05", label: "Május" },
+    { value: "06", label: "Június" },
+    { value: "07", label: "Július" },
+    { value: "08", label: "Augusztus" },
+    { value: "09", label: "Szeptember" },
+    { value: "10", label: "Október" },
+    { value: "11", label: "November" },
+    { value: "12", label: "December" },
   ]);
 
   useEffect(() => {
     const days = getDaysInMonth(selectedYear, selectedMonth);
     setDaysInMonth(days);
     setDaysArray([...Array(days).keys()].map(day => day + 1));
-  }, [selectedYear, selectedMonth]);
-  console.log(selectedYear, selectedMonth, daysInMonth);
+  }, [selectedMonth]);
+  //console.log(selectedMonth, daysInMonth);
  
   const getDaysInMonth = (year, month) => {
      return new Date(year, month, 0).getDate();
   };
 
+  useEffect(()=> {
+    fetch(`https://szunetnapok.hu/api/91ba48bb924e7cf64df1db2dcf9648d28fed707ea475eeec6ad1cef91594f2a8/2024${selectedMonth}`)
+    .then(resp => {
+      return resp.json();
+    })
+    .then(data=>{
+      setFreeDays(data);
+     // console.log(data);
+    });
+  },[selectedMonth]);
+
+  console.log(freeDays);
+
   return (
     <div>
       <h1>Üdvözlöm a Roster Maker applikációban!</h1>
-      <label>Válasszon egy hónapot: </label>
-      <select id="yearSelect" value={selectedYear} onChange={(e) => setSelectedYear((e.target.value))}>
-        {years.map((year, index) => (
-          <option key={index} value={year}>{year}</option>
-        ))}
-      </select>
-      <select id="monthSelect" value={selectedMonth} onChange={(e) => setSelectedMonth(parseInt(e.target.value))}>
+      <label>Válasszon egy hónapot 2024-ben: </label>
+      
+      <select id="monthSelect" value={selectedMonth} onChange={(e) => setSelectedMonth((e.target.value))}>
         {monthOptions.map(option => (
           <option key={option.value} value={option.value}>{option.label}</option>
         ))}
