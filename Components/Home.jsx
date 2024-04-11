@@ -3,17 +3,14 @@ import './style.css';
 
 function Home() {
   const [workers, setWorkers] = useState([
-    "W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8", "W9", "W10", "W11", "W12"
+    "Dolgozó1", "Dolgozó2", "Dolgozó3", "Dolgozó4", "Dolgozó5", "Dolgozó6", "Dolgozó7", "Dolgozó8", "Dolgozó9", "Dolgozó10", "Dolgozó11", "Dolgozó12"
   ]);
-  const [years, setYears] = useState([
-    2024,2025,2026,2027
-  ]);
-
+ 
   const [selectedYear, setSelectedYear] = useState(2024);
   const [selectedMonth, setSelectedMonth] = useState("01");
   const [daysInMonth, setDaysInMonth] = useState(31);
   const [daysArray, setDaysArray] = useState([...Array(daysInMonth).keys()].map(day => day + 1));
-  const [freeDays, setFreeDays] = useState([]);
+  const [freeDays, setFreeDays] = useState({days:[]});
 
   const [monthOptions,setMonthOptions] = useState([
     { value: "01", label: "Január" },
@@ -40,19 +37,23 @@ function Home() {
   const getDaysInMonth = (year, month) => {
      return new Date(year, month, 0).getDate();
   };
+  const isWeekend = (day) => {
+    const date = new Date(selectedYear, selectedMonth - 1, day);
+    const dayOfWeek = date.getDay(); 
+    return dayOfWeek === 0 || dayOfWeek === 6; 
+  };
 
-  useEffect(()=> {
-    fetch(`https://szunetnapok.hu/api/91ba48bb924e7cf64df1db2dcf9648d28fed707ea475eeec6ad1cef91594f2a8/2024${selectedMonth}`)
-    .then(resp => {
-      return resp.json();
-    })
-    .then(data=>{
-      setFreeDays(data);
-     // console.log(data);
-    });
+  /*useEffect(()=> {
+    const fetchData = async () => {
+      const resp = await fetch(`https://szunetnapok.hu/api/91ba48bb924e7cf64df1db2dcf9648d28fed707ea475eeec6ad1cef91594f2a8/2024${selectedMonth}`);
+      const data = await resp.json();
+      setFreeDays({days: data});
+    }
+    fetchData();
   },[selectedMonth]);
 
   console.log(freeDays);
+  console.log(freeDays.days.days)*/
 
   return (
     <div>
@@ -68,9 +69,15 @@ function Home() {
       <table>
         <thead>
           <tr>
+            <th>Nap</th>
+            {daysArray.map(day => (
+              <th key={day} style={{backgroundColor: isWeekend(day)? 'lightgray':''}}>{day}</th>
+            ))}
+          </tr>
+          <tr>
             <th>Név</th>
             {daysArray.map(day => (
-              <th key={day}>{day}</th>
+              <th key={day} style={{backgroundColor: isWeekend(day)? 'lightgray':''}}>{new Date(selectedYear, selectedMonth - 1, day).toLocaleDateString('hu-HU', { weekday: 'short' })}</th>
             ))}
           </tr>
         </thead>
@@ -85,6 +92,7 @@ function Home() {
           ))}
         </tbody>
       </table>
+
     </div>
   );
 }
