@@ -10,19 +10,21 @@ body {
   }
   table {
     border-collapse: collapse;
-    border: 1px solid black;
+    border: 2px solid black;
     table-layout: fixed;
     width: 100%;
+    text-align: center;
   }
   
   th, td {
     border: 1px solid black;
-    padding: 8px;
+    padding: 1px;
     text-align: center;
   }
 
   th:first-child{
     width: 200px;
+    text-align: center;
   }
   th:not(:first-child), td:not(:first-child){
     width: calc((100%-200px)-31);
