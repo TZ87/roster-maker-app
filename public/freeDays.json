@@ -1,0 +1,78 @@
+[
+  {
+    "date": "2024-01-01",
+    "name": "Újév"
+  },
+  {
+    "date": "2024-03-15",
+    "name": "1848-as forradalom ünnepe"
+  },
+  {
+    "date": "2024-03-29",
+    "name": "Nagypéntek"
+  },
+  {
+    "date": "2024-03-31",
+    "name": "Húsvét"
+  },
+  {
+    "date": "2024-04-01",
+    "name": "Húsvét hétfő"
+  },
+  {
+    "date": "2024-05-01",
+    "name": "Munka ünnepe"
+  },
+  {
+    "date": "2024-05-19",
+    "name": "Pünkösd"
+  },
+  {
+    "date": "2024-05-20",
+    "name": "Pünkösd"
+  },
+  {
+    "date": "2024-08-03",
+    "name": "Áthelyezett munkanap (2024-08-19)"
+  },
+  {
+    "date": "2024-08-19",
+    "name": "Áthelyezett pihenőnap (2024-08-20)"
+  },
+  {
+    "date": "2024-08-20",
+    "name": "Államalapítás ünnepe"
+  },
+  {
+    "date": "2024-10-23",
+    "name": "1956-os forradalom ünnepe"
+  },
+  {
+    "date": "2024-11-01",
+    "name": "Mindenszentek"
+  },
+  {
+    "date": "2024-12-07",
+    "name": "Áthelyezett munkanap (2024-12-24)"
+  },
+  {
+    "date": "2024-12-14",
+    "name": "Áthelyezett munkanap (2024-12-27)"
+  },
+  {
+    "date": "2024-12-24",
+    "name": "Szenteste"
+  },
+  {
+    "date": "2024-12-25",
+    "name": "Karácsony"
+  },
+  {
+    "date": "2024-12-26",
+    "name": "Karácsony"
+  },
+  {
+    "date": "2024-12-27",
+    "name": "Áthelyezett pihenőnap (2024-12-14)"
+  }
+]
