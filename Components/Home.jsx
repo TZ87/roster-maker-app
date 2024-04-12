@@ -7,7 +7,7 @@ function Home() {
   ]);
  
   const [selectedYear, setSelectedYear] = useState(2024);
-  const [selectedMonth, setSelectedMonth] = useState("01");
+  const [selectedMonth, setSelectedMonth] = useState("05");
   const [daysInMonth, setDaysInMonth] = useState(31);
   const [daysArray, setDaysArray] = useState([...Array(daysInMonth).keys()].map(day => day + 1));
   const [freeDays, setFreeDays] = useState([]);
@@ -32,8 +32,9 @@ function Home() {
     const days = getDaysInMonth(selectedYear, selectedMonth);
     setDaysInMonth(days);
     setDaysArray([...Array(days).keys()].map(day => day + 1));
-  }, [selectedMonth]);
-  //console.log(selectedMonth, daysInMonth);
+    filterHolidaysInSelectedMonth();
+  }, [selectedMonth, freeDays]);
+
 
 const getData = () => {
   fetch('freeDays.json', {headers: {
@@ -60,7 +61,21 @@ useEffect(()=>{
     return dayOfWeek === 0 || dayOfWeek === 6; 
   };
 
+  const filterHolidaysInSelectedMonth = () => {
+    if (freeDays && freeDays.length > 0) {
+           
+      const holidaysInSelectedMonth = freeDays.filter(holiday => {
+       return holiday.date.substr(5,2)==selectedMonth
+      });
   
+      if (holidaysInSelectedMonth.length > 0) {
+        setHolidays(holidaysInSelectedMonth);
+      } else {
+        setHolidays([]);
+      }
+    }
+  };
+ 
   return (
     <div>
       <h1>Üdvözlöm a Roster Maker applikációban!</h1>
@@ -97,8 +112,23 @@ useEffect(()=>{
             </tr>
           ))}
         </tbody>
+        {holidays.length > 0 && (
+            <tfoot>
+              <tr>
+                <td colSpan={daysArray.length} style={{ color: 'red' }}>
+                  A következő áthelyezett munkanapok illetve ünnepnapok vannak az adott hónapban:
+                </td>
+              </tr>
+              {holidays.map((holiday, index) => (
+                <tr key={index}>
+                  <td colSpan={daysArray.length} style={{ color: 'red' }}>
+                    {holiday.date} - {holiday.name}
+                  </td>
+                </tr>
+              ))}
+            </tfoot>
+        )}
       </table>
-
     </div>
   );
 }
