@@ -27,5 +27,5 @@ body {
     text-align: center;
   }
   th:not(:first-child), td:not(:first-child){
-    width: calc((100%-200px)-31);
+    width: calc((100%-200px));
   }
