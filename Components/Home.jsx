@@ -3,7 +3,7 @@ import './style.css';
 
 function Home() {
   const [workers, setWorkers] = useState([
-    "Dolgozó1", "Dolgozó2", "Dolgozó3", "Dolgozó4", "Dolgozó5", "Dolgozó6", "Dolgozó7", "Dolgozó8", "Dolgozó9", "Dolgozó10", "Dolgozó11", "Dolgozó12", "Dolgozó13", "Dolgozó14", "Dolgozó15", "Dolgozó16"
+    "Dolgozó1", "Dolgozó2", "Dolgozó3", "Dolgozó4", "Dolgozó5", "Dolgozó6", "Dolgozó7", "Dolgozó8", "Dolgozó9", "Dolgozó10", "Dolgozó11", "Dolgozó12", "Dolgozó13", "Dolgozó14", "Dolgozó15", "Dolgozó16", "Dolgozó17", "Dolgozó18"
   ]);
  
   const [selectedYear, setSelectedYear] = useState(2024);
@@ -41,6 +41,10 @@ function Home() {
     setDaysInMonth(days);
     setDaysArray([...Array(days).keys()].map(day => day + 1));
     filterHolidaysInSelectedMonth();
+    setShifts({});
+    setTotalDayShifts({});
+    setTotalNightShifts({});
+    setTotalWorkHours({});
   }, [selectedMonth, freeDays]);
 
 
@@ -119,7 +123,7 @@ const assignShifts = () => {
     const dayStr = day.toString();
     newShifts[dayStr] = { dayShift: [], nightShift: [] };
 
-    // Select workers for day shift
+    
     let availableDayWorkers = workers.filter(worker => !previousNightShiftWorkers.includes(worker) && workHours[worker] + shiftHours <= monthlyWorkHours);
     const dayShiftWorkers = getRandomElements(availableDayWorkers, 4);
     newShifts[dayStr].dayShift = dayShiftWorkers;
@@ -128,16 +132,15 @@ const assignShifts = () => {
       totalDayShiftsTemp[worker] += 1;
     });
 
-    // Select workers for night shift
+    
     let availableNightWorkers = workers.filter(worker => !dayShiftWorkers.includes(worker) && workHours[worker] + shiftHours <= monthlyWorkHours);
     const nightShiftWorkers = getRandomElements(availableNightWorkers, 3);
     newShifts[dayStr].nightShift = nightShiftWorkers;
     nightShiftWorkers.forEach(worker => {
       workHours[worker] += shiftHours;
-      totalNightShiftsTemp[worker] += 1;
-    });
+      totalNightShiftsTemp[worker] += 1;});
 
-    // Update the list of workers who worked night shift
+    
     previousNightShiftWorkers.length = 0;
     previousNightShiftWorkers.push(...nightShiftWorkers);
   });
@@ -153,10 +156,9 @@ const assignShifts = () => {
   setTotalWorkHours(totalWorkHoursTemp);
 };
 
-useEffect(() => {
+/*useEffect(() => {
   assignShifts();
-}, [selectedMonth]);
-console.log(totalWorkHours)
+}, [selectedMonth]);*/
  
 return (
   <div>
