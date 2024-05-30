@@ -2,12 +2,12 @@ import React, { useState, useEffect } from "react";
 import './style.css';
 
 function Home() {
-  const [workers, setWorkers] = useState([
-    "Dolgozó1", "Dolgozó2", "Dolgozó3", "Dolgozó4", "Dolgozó5", "Dolgozó6", "Dolgozó7", "Dolgozó8", "Dolgozó9", "Dolgozó10", "Dolgozó11", "Dolgozó12", "Dolgozó13", "Dolgozó14", "Dolgozó15", "Dolgozó16", "Dolgozó17", "Dolgozó18"
-  ]);
+  const [shopWorkers, setShopWorkers] = useState([
+    "Dolgozó1", "Dolgozó2", "Dolgozó3", "Dolgozó4", "Dolgozó5", "Dolgozó6", "Dolgozó7", "Dolgozó8", "Dolgozó9", "Dolgozó10", "Dolgozó11", "Dolgozó12"]);
  
+  const [psWorkers, setPSWorkers] = useState(["Dolgozó13", "Dolgozó14", "Dolgozó15", "Dolgozó16", "Dolgozó17", "Dolgozó18"])
   const [selectedYear, setSelectedYear] = useState(2024);
-  const [selectedMonth, setSelectedMonth] = useState("05");
+  const [selectedMonth, setSelectedMonth] = useState("07");
   const [daysInMonth, setDaysInMonth] = useState(31);
   const [daysArray, setDaysArray] = useState([...Array(daysInMonth).keys()].map(day => day + 1));
   const [freeDays, setFreeDays] = useState([]);
@@ -18,8 +18,9 @@ function Home() {
   const [totalDayShifts, setTotalDayShifts] = useState({});
   const [totalNightShifts, setTotalNightShifts] = useState({});
   const [totalWorkHours, setTotalWorkHours] = useState({});
+  const [nextNightShiftCandidates, setNextNightShiftCandidates]=useState([]);
 
-
+ 
 
   const [monthOptions,setMonthOptions] = useState([
     { value: "01", label: "Január" },
@@ -105,61 +106,71 @@ const getRandomElements = (array, count) => {
 
 const assignShifts = () => {
   const newShifts = {};
-  const workHours = workers.reduce((acc, worker) => {
-    acc[worker] = 0;
-    return acc;
+  const workHours = [...shopWorkers, ...psWorkers].reduce((hours, worker) => {
+    hours[worker] = 0;
+    return hours;
   }, {});
-  const previousNightShiftWorkers = [];
 
+  const previousNightShiftWorkers = [];
+  let nextNightShiftCandidatesTemp = [];
+  
   const totalDayShiftsTemp = {};
   const totalNightShiftsTemp = {};
-
-  workers.forEach(worker => {
+  
+  [...shopWorkers, ...psWorkers].forEach(worker => {
     totalDayShiftsTemp[worker] = 0;
     totalNightShiftsTemp[worker] = 0;
   });
-
+  
   daysArray.forEach(day => {
     const dayStr = day.toString();
     newShifts[dayStr] = { dayShift: [], nightShift: [] };
-
     
-    let availableDayWorkers = workers.filter(worker => !previousNightShiftWorkers.includes(worker) && workHours[worker] + shiftHours <= monthlyWorkHours);
-    const dayShiftWorkers = getRandomElements(availableDayWorkers, 4);
-    newShifts[dayStr].dayShift = dayShiftWorkers;
-    dayShiftWorkers.forEach(worker => {
+    nextNightShiftCandidatesTemp.length=0;
+
+    let availableDayShopWorkers = shopWorkers.filter(worker => !previousNightShiftWorkers.includes(worker) && workHours[worker] + shiftHours <= monthlyWorkHours);
+    let availableDayPSWorkers = psWorkers.filter(worker => !previousNightShiftWorkers.includes(worker) && workHours[worker] + shiftHours <= monthlyWorkHours);
+    const dayShiftShopWorkers = getRandomElements(availableDayShopWorkers, 3);
+    const dayShiftPSWorkers = getRandomElements(availableDayPSWorkers, 1);
+    newShifts[dayStr].dayShift = [...dayShiftShopWorkers, ...dayShiftPSWorkers];
+    [...dayShiftShopWorkers, ...dayShiftPSWorkers].forEach(worker => {
       workHours[worker] += shiftHours;
       totalDayShiftsTemp[worker] += 1;
     });
+    nextNightShiftCandidatesTemp=[...dayShiftShopWorkers, ...dayShiftPSWorkers];
 
-    
-    let availableNightWorkers = workers.filter(worker => !dayShiftWorkers.includes(worker) && workHours[worker] + shiftHours <= monthlyWorkHours);
-    const nightShiftWorkers = getRandomElements(availableNightWorkers, 3);
-    newShifts[dayStr].nightShift = nightShiftWorkers;
-    nightShiftWorkers.forEach(worker => {
+    let availableNightShopWorkers = shopWorkers.filter(worker =>!newShifts[dayStr].dayShift.includes(worker) && workHours[worker] + shiftHours <= monthlyWorkHours);
+    let availableNightPSWorkers = psWorkers.filter(worker => !newShifts[dayStr].dayShift.includes(worker) && workHours[worker] + shiftHours <= monthlyWorkHours);
+    const nightShiftShopWorkers = getRandomElements(availableNightShopWorkers, 2);
+    const nightShiftPSWorker = getRandomElements(availableNightPSWorkers, 1);
+    newShifts[dayStr].nightShift = [...nightShiftShopWorkers, ...nightShiftPSWorker];
+    [...nightShiftShopWorkers, ...nightShiftPSWorker].forEach(worker => {
       workHours[worker] += shiftHours;
-      totalNightShiftsTemp[worker] += 1;});
-
-    
+      totalNightShiftsTemp[worker] += 1;
+    });
+   
     previousNightShiftWorkers.length = 0;
-    previousNightShiftWorkers.push(...nightShiftWorkers);
+    previousNightShiftWorkers.push(...nightShiftShopWorkers, ...nightShiftPSWorker);
   });
-
+  
+  const totalWorkHoursTemp = {};
+  [...shopWorkers, ...psWorkers].forEach(worker => {
+    totalWorkHoursTemp[worker] = (totalDayShiftsTemp[worker] + totalNightShiftsTemp[worker]) * shiftHours;
+  });
   setShifts(newShifts);
   setTotalDayShifts(totalDayShiftsTemp);
   setTotalNightShifts(totalNightShiftsTemp);
-  
-  const totalWorkHoursTemp = {};
-  workers.forEach(worker => {
-    totalWorkHoursTemp[worker] = (totalDayShiftsTemp[worker] + totalNightShiftsTemp[worker]) * shiftHours;
-  });
   setTotalWorkHours(totalWorkHoursTemp);
 };
+useEffect(() => {
+  setShifts({});
+  setTotalDayShifts({});
+  setTotalNightShifts({});
+  setTotalWorkHours({});
+}, [selectedMonth]);
 
-/*useEffect(() => {
-  assignShifts();
-}, [selectedMonth]);*/
- 
+
+
 return (
   <div>
     <h1>Üdvözlöm a Roster Maker applikációban!</h1>
@@ -197,12 +208,13 @@ return (
         </tr>
       </thead>
       <tbody>
-        {workers.map((name, index) => (
+        {[...shopWorkers, ...psWorkers].map((name, index) => (
           <tr key={index}>
             <td>{name}</td>
             {daysArray.map(day => (
-              <td key={day}>{shifts[day] && shifts[day].dayShift.includes(name) && 'N'}
-              {shifts[day] && shifts[day].nightShift.includes(name) && 'É'}</td>
+              <td key={day}>
+              {shifts[day] && shifts[day].dayShift.includes(name) ? 'N':''}
+              {shifts[day] && shifts[day].nightShift.includes(name) ? 'É':''}</td>
             ))}
             <td>{totalDayShifts[name]}</td>
             <td>{totalNightShifts[name]}</td>
