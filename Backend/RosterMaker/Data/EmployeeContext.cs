@@ -6,13 +6,7 @@ namespace RosterMaker.Data;
 public class EmployeeContext : DbContext
 {
     public DbSet<Employee> Employees { get; set; }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseSqlServer(
-            "Server=localhost,1455;Database=RosterMaker;User Id=SA;Password=!151RosterMaker151!;Encrypt=false;", sqlOptions => sqlOptions.EnableRetryOnFailure());
-    }
-
+    
     protected override void OnModelCreating(ModelBuilder builder)
     {
         builder.Entity<Employee>()
