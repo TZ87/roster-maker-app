@@ -4,11 +4,11 @@ import './style.css';
 function Home() {
   const [shopWorkers, setShopWorkers] = useState([
     "Dolgozó1", "Dolgozó2", "Dolgozó3", "Dolgozó4", "Dolgozó5", "Dolgozó6", "Dolgozó7", "Dolgozó8", "Dolgozó9", "Dolgozó10", "Dolgozó11", "Dolgozó12"]);
- 
   const [psWorkers, setPSWorkers] = useState(["Dolgozó13", "Dolgozó14", "Dolgozó15", "Dolgozó16", "Dolgozó17", "Dolgozó18"])
+ 
   const [selectedYear, setSelectedYear] = useState(2024);
   const [selectedMonth, setSelectedMonth] = useState("07");
-  const [daysInMonth, setDaysInMonth] = useState(31);
+  const [daysInMonth, setDaysInMonth] = useState();
   const [daysArray, setDaysArray] = useState([...Array(daysInMonth).keys()].map(day => day + 1));
   const [freeDays, setFreeDays] = useState([]);
   const [holidays, setHolidays] =useState([]);
@@ -64,43 +64,47 @@ useEffect(()=>{
   getData()
 },[])
  
-  const getDaysInMonth = (year, month) => {
-     return new Date(year, month, 0).getDate();
-  };
+const getDaysInMonth = (year, month) => {
+    return new Date(year, month, 0).getDate();
+};
 
-  const isWeekend = (day) => {
-    const date = new Date(selectedYear, selectedMonth - 1, day);
-    const dayOfWeek = date.getDay(); 
-    return dayOfWeek === 0 || dayOfWeek === 6; 
-  };
+const isWeekend = (day) => {
+  const date = new Date(selectedYear, selectedMonth - 1, day);
+  const dayOfWeek = date.getDay(); 
+  return dayOfWeek === 0 || dayOfWeek === 6; 
+};
 
-  const filterHolidaysInSelectedMonth = () => {
-    if (freeDays && freeDays.length > 0) {
+const filterHolidaysInSelectedMonth = () => {
+  if (freeDays && freeDays.length > 0) {
            
-      const holidaysInSelectedMonth = freeDays.filter(holiday => {
-       return holiday.date.substr(5,2)==selectedMonth
-      });
+    const holidaysInSelectedMonth = freeDays.filter(holiday => {
+    return holiday.date.substr(5,2)==selectedMonth
+    });
   
-      if (holidaysInSelectedMonth.length > 0) {
-        setHolidays(holidaysInSelectedMonth);
-      } else {
-        setHolidays([]);
-      }
+    if (holidaysInSelectedMonth.length > 0) {
+    setHolidays(holidaysInSelectedMonth);
+    } else {
+      setHolidays([]);
     }
-  };
+  }
+};
 
-  const calculateMonthlyWorkHours = (daysArray, holidays, workHoursPerDay) => {
-    let workdays = daysArray.filter(day => !isWeekend(day) && !holidays.some(holiday => parseInt(holiday.date.substr(8, 2)) === day));
-    setMonthlyWorkHours(workdays.length * workHoursPerDay);
-  };
+const calculateMonthlyWorkHours = (daysArray, holidays, workHoursPerDay) => {
+  let workdays = daysArray.filter(day => !isWeekend(day) && !holidays.some(holiday => parseInt(holiday.date.substr(8, 2)) === day));
+  setMonthlyWorkHours(workdays.length * workHoursPerDay);
+};
 
-  useEffect(() => {
-    calculateMonthlyWorkHours(daysArray, holidays, 8); 
-  }, [daysArray, holidays]);
+useEffect(() => {
+  calculateMonthlyWorkHours(daysArray, holidays, 8); 
+}, [daysArray, holidays]);
 
 
 const getRandomElements = (array, count) => {
-  const shuffled = array.slice().sort(() => 0.5 - Math.random());
+  const shuffled = array.slice();
+  for (let i= shuffled.length-1; i>0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  } 
   return shuffled.slice(0, count);
 };
 
@@ -111,8 +115,8 @@ const assignShifts = () => {
     return hours;
   }, {});
 
-  const previousNightShiftWorkers = [];
-  let nextNightShiftCandidatesTemp = [];
+  let previousNightShiftWorkers = [];
+  //let nextNightShiftCandidatesTemp = [];
   
   const totalDayShiftsTemp = {};
   const totalNightShiftsTemp = {};
@@ -126,7 +130,7 @@ const assignShifts = () => {
     const dayStr = day.toString();
     newShifts[dayStr] = { dayShift: [], nightShift: [] };
     
-    nextNightShiftCandidatesTemp.length=0;
+    //nextNightShiftCandidatesTemp=[];
 
     let availableDayShopWorkers = shopWorkers.filter(worker => !previousNightShiftWorkers.includes(worker) && workHours[worker] + shiftHours <= monthlyWorkHours);
     let availableDayPSWorkers = psWorkers.filter(worker => !previousNightShiftWorkers.includes(worker) && workHours[worker] + shiftHours <= monthlyWorkHours);
@@ -137,7 +141,7 @@ const assignShifts = () => {
       workHours[worker] += shiftHours;
       totalDayShiftsTemp[worker] += 1;
     });
-    nextNightShiftCandidatesTemp=[...dayShiftShopWorkers, ...dayShiftPSWorkers];
+    //nextNightShiftCandidatesTemp=[...dayShiftShopWorkers, ...dayShiftPSWorkers];
 
     let availableNightShopWorkers = shopWorkers.filter(worker =>!newShifts[dayStr].dayShift.includes(worker) && workHours[worker] + shiftHours <= monthlyWorkHours);
     let availableNightPSWorkers = psWorkers.filter(worker => !newShifts[dayStr].dayShift.includes(worker) && workHours[worker] + shiftHours <= monthlyWorkHours);
@@ -149,7 +153,7 @@ const assignShifts = () => {
       totalNightShiftsTemp[worker] += 1;
     });
    
-    previousNightShiftWorkers.length = 0;
+    previousNightShiftWorkers = [];
     previousNightShiftWorkers.push(...nightShiftShopWorkers, ...nightShiftPSWorker);
   });
   
