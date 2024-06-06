@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using RosterMaker.Data;
+using RosterMaker.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<EmployeeContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("RosterMakerConnection")));
+
+builder.Services.AddScoped<IEmployeeRepo, EmployeeRepo>();
 
 var app = builder.Build();
 
